@@ -53,6 +53,7 @@ export default class AuthComponent implements OnInit {
     this.authType = this.route.snapshot.url.at(-1)!.path;
     this.title = this.authType === "login" ? "Sign in" : "Sign up";
     if (this.authType === "register") {
+      console.log("era")
       this.authForm.addControl(
         "username",
         new FormControl("", {
@@ -63,29 +64,30 @@ export default class AuthComponent implements OnInit {
     }
   }
 
-  submitForm(): void { // you need this for Task 2
-    this.isSubmitting = true;
-    this.errors = { errors: {} };
+submitForm(): void {
+  this.isSubmitting = true;
+  this.errors = { errors: {} };
 
-    let observable =
-      this.authType === "login"
-        ? this.userService.login(
-            this.authForm.value as { email: string; password: string },
-          )
-        : this.userService.register(
-            this.authForm.value as {
-              email: string;
-              password: string;
-              username: string;
-            },
-          );
+  let observable =
+    this.authType === "login"
+      ? this.userService.login(
+          this.authForm.value as { email: string; password: string },
+        )
+      : this.userService.register(
+          this.authForm.value as {
+            email: string;
+            password: string;
+            username: string;
+          },
+        );
 
-    observable.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: () => void this.router.navigate(["/"]),
-      error: (err) => {
-        this.errors = err;
-        this.isSubmitting = false;
-      },
-    });
-  }
+  observable.subscribe({
+    next: () => void this.router.navigate(["/"]),
+    error: (err) => {
+      this.errors = err;
+      this.isSubmitting = false;
+    },
+  });
 }
+}
+

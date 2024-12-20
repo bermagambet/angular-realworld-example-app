@@ -6,18 +6,37 @@ import {
   RouterLinkActive,
   RouterOutlet,
 } from "@angular/router";
-import { catchError, switchMap } from "rxjs/operators";
-import { combineLatest, of, throwError } from "rxjs";
 import { UserService } from "../../../../core/auth/services/user.service";
 import { Profile } from "../../models/profile.model";
 import { ProfileService } from "../../services/profile.service";
 import { AsyncPipe, NgIf } from "@angular/common";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { FollowButtonComponent } from "../../components/follow-button.component";
+import { mockUser } from "./mockUser"; 
 
 @Component({
   selector: "app-profile-page",
-  templateUrl: "./profile.component.html",
+  template: `
+    <ng-container *ngIf="!isWrongUser; else wrongUserTemplate">
+      <!-- Если пользователь правильный (smth), показываем профиль -->
+      <div class="profile-page">
+        <h1>{{ profile.username }}</h1>
+        <p>{{ profile.bio }}</p>
+        <img [src]="profile.image" alt="Profile Image" />
+
+        <!-- Остальная логика отображения профиля -->
+        <!-- Например, кнопка follow/unfollow -->
+        <app-follow-button
+          [profile]="profile"
+          (toggle)="onToggleFollowing($event)"
+        ></app-follow-button>
+      </div>
+    </ng-container>
+
+    <ng-template #wrongUserTemplate>
+      <!-- Если имя пользователя не smth, показываем "Wrong user" -->
+      <p>Wrong user</p>
+    </ng-template>
+  `,
   imports: [
     FollowButtonComponent,
     NgIf,
@@ -25,13 +44,13 @@ import { FollowButtonComponent } from "../../components/follow-button.component"
     AsyncPipe,
     RouterLinkActive,
     RouterOutlet,
-    FollowButtonComponent,
   ],
   standalone: true,
 })
 export class ProfileComponent implements OnInit {
   profile!: Profile;
   isUser: boolean = false;
+  isWrongUser: boolean = false;
   destroyRef = inject(DestroyRef);
 
   constructor(
@@ -41,25 +60,20 @@ export class ProfileComponent implements OnInit {
     private readonly profileService: ProfileService,
   ) {}
 
-  ngOnInit() { // You need to modify this for Task 3
-    this.profileService
-      .get(this.route.snapshot.params["username"])
-      .pipe(
-        // catchError((error) => {
-        //   void this.router.navigate(["/"]);
-        //   return throwError(() => error);
-        // }),
-        switchMap((profile) => {
-          return combineLatest([of(profile), this.userService.currentUser]);
-        }),
-        takeUntilDestroyed(this.destroyRef),
-      )
-      .subscribe(([profile, user]) => {
-        this.profile = profile;
-        this.isUser = profile.username === user?.username;
+  ngOnInit() {
+    const username = this.route.snapshot.params["username"];
+    if (username === "smth") {
+  
+      this.profile = mockUser;
+     
+      this.userService.currentUser.subscribe((user) => {
+        this.isUser = user?.username === mockUser.username;
       });
+    } else {
+  
+      this.isWrongUser = true;
+    }
   }
-
   onToggleFollowing(profile: Profile) {
     this.profile = profile;
   }
