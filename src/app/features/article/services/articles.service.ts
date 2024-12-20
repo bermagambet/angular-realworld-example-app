@@ -1,62 +1,148 @@
 import { Injectable } from "@angular/core";
-import { HttpClient, HttpParams } from "@angular/common/http";
-import { Observable } from "rxjs";
-import { map } from "rxjs/operators";
+import { Observable, of } from "rxjs";
 import { ArticleListConfig } from "../models/article-list-config.model";
 import { Article } from "../models/article.model";
 
 @Injectable({ providedIn: "root" })
 export class ArticlesService {
-  constructor(private readonly http: HttpClient) {}
+  constructor() {}
 
   query(
     config: ArticleListConfig,
   ): Observable<{ articles: Article[]; articlesCount: number }> {
-    // Convert any filters over to Angular's URLSearchParams
-    let params = new HttpParams();
 
-    Object.keys(config.filters).forEach((key) => {
-      // @ts-ignore
-      params = params.set(key, config.filters[key]);
-    });
+    const mockArticles: Article[] = [
+      {
+        title: "Mock Article 1",
+        description: "Description for mock article 1",
+        body: "Body of mock article 1",
+        slug: "mock-article-1",
+        tagList: ["mock", "article"],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        favorited: false,
+        favoritesCount: 0,
+        author: {
+          username: "mockUser",
+          bio: "Mock user bio",
+          image: "",
+          following: false,
+        },
+      },
+      {
+        title: "Mock Article 2",
+        description: "Description for mock article 2",
+        body: "Body of mock article 2",
+        slug: "mock-article-2",
+        tagList: ["mock", "test"],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        favorited: false,
+        favoritesCount: 0,
+        author: {
+          username: "mockUser2",
+          bio: "Another mock user bio",
+          image: "",
+          following: false,
+        },
+      },
+    ];
 
-    return this.http.get<{ articles: Article[]; articlesCount: number }>(
-      "/articles" + (config.type === "feed" ? "/feed" : ""),
-      { params },
-    );
+  
+    return of({ articles: mockArticles, articlesCount: mockArticles.length });
   }
 
   get(slug: string): Observable<Article> {
-    return this.http
-      .get<{ article: Article }>(`/articles/${slug}`)
-      .pipe(map((data) => data.article));
+  
+    const mockArticle: Article = {
+      title: "Single Mock Article",
+      description: "A mock article for testing",
+      body: "Content of single mock article",
+      slug: slug,
+      tagList: ["mock"],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      favorited: false,
+      favoritesCount: 0,
+      author: {
+        username: "mockAuthor",
+        bio: "Mock Author Bio",
+        image: "",
+        following: false,
+      },
+    };
+    return of(mockArticle);
   }
 
   delete(slug: string): Observable<void> {
-    return this.http.delete<void>(`/articles/${slug}`);
+   
+    return of(void 0);
   }
 
   create(article: Partial<Article>): Observable<Article> {
-    return this.http
-      .post<{ article: Article }>("/articles/", { article: article })
-      .pipe(map((data) => data.article));
+  
+    const createdArticle: Article = {
+      ...article,
+      title: article.title ?? "New Mock Article",
+      description: article.description ?? "New mock description",
+      body: article.body ?? "New mock body",
+      slug: "new-mock-article",
+      tagList: article.tagList ?? [],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      favorited: false,
+      favoritesCount: 0,
+      author: {
+        username: "mockAuthor",
+        bio: "Mock Bio",
+        image: "",
+        following: false,
+      },
+    } as Article;
+    return of(createdArticle);
   }
 
   update(article: Partial<Article>): Observable<Article> {
-    return this.http
-      .put<{ article: Article }>(`/articles/${article.slug}`, {
-        article: article,
-      })
-      .pipe(map((data) => data.article));
+
+    const updatedArticle: Article = {
+      ...article,
+      updatedAt: new Date().toISOString(),
+      favorited: article.favorited ?? false,
+      favoritesCount: article.favoritesCount ?? 0,
+      tagList: article.tagList ?? [],
+      author: {
+        username: "updatedMockAuthor",
+        bio: "Updated Mock Bio",
+        image: "",
+        following: false,
+      },
+    } as Article;
+    return of(updatedArticle);
   }
 
   favorite(slug: string): Observable<Article> {
-    return this.http
-      .post<{ article: Article }>(`/articles/${slug}/favorite`, {})
-      .pipe(map((data) => data.article));
+    const favoritedArticle: Article = {
+      title: "Favorited Mock Article",
+      description: "A mock article now favorited",
+      body: "Body of a now favorited mock article",
+      slug: slug,
+      tagList: ["mock"],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      favorited: true,
+      favoritesCount: 1,
+      author: {
+        username: "mockAuthor",
+        bio: "Mock Bio",
+        image: "",
+        following: false,
+      },
+    };
+    return of(favoritedArticle);
   }
 
   unfavorite(slug: string): Observable<void> {
-    return this.http.delete<void>(`/articles/${slug}/favorite`);
+    
+    return of(void 0);
   }
 }

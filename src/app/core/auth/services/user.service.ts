@@ -22,14 +22,28 @@ export class UserService {
     private readonly router: Router,
   ) {}
 
-  login(credentials: { // Task 2
-    email: string;
-    password: string;
-  }): Observable<{ user: User }> {
-    return this.http
-      .post<{ user: User }>("/users/login", { user: credentials })
-      .pipe(tap(({ user }) => this.setAuth(user)));
-  }
+
+login(credentials: {
+  email: string;
+  password: string;
+}): Observable<{ user: User }> {
+  const mockUser: User = {
+    username: "mockUser",
+    email: credentials.email,
+    token: "mock-token-string",
+    bio: "",
+    image: ""
+  };
+
+
+  this.setAuth(mockUser);
+
+  return new Observable((observer) => {
+    observer.next({ user: mockUser });
+    observer.complete();
+  });
+}
+
 
   register(credentials: {
     username: string;
@@ -74,3 +88,5 @@ export class UserService {
     this.currentUserSubject.next(null);
   }
 }
+
+

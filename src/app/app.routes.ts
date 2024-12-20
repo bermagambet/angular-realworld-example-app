@@ -18,9 +18,9 @@ export const routes: Routes = [
   {
     path: "register",
     loadComponent: () => import("./core/auth/auth.component"),
-    // canActivate: [
-    //   () => inject(UserService).isAuthenticated.pipe(map((isAuth) => !isAuth)),
-    // ],
+    canActivate: [
+      () => inject(UserService).isAuthenticated.pipe(map((isAuth) => !isAuth)),
+    ],
   },
   {
     path: "settings",
