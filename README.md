@@ -18,3 +18,4 @@ Important: There a lot of stuff going on in this project, but my tasks will only
   3.2 Import this variable into Profile component, check if URL is "profile/smth"
   3.3 If true, show your mock data, if false, show "Wrong user" text.
 # Angular_Final_2024
+# Angular_Final_2024
