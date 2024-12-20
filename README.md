@@ -1,3 +1,6 @@
+22B031198 
+Zeinaddin Zurgambaev 
+
 Angular Final Exam, Fall 2024
 
 3 tasks, each task 33% of 20 points. ~6.6
@@ -14,4 +17,4 @@ Important: There a lot of stuff going on in this project, but my tasks will only
   3.1 Create new TS file with 1 variable: mockUser, make it Profile type.
   3.2 Import this variable into Profile component, check if URL is "profile/smth"
   3.3 If true, show your mock data, if false, show "Wrong user" text.
-
+# Angular_Final_2024
